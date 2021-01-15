@@ -18,12 +18,6 @@ import { actions, putRecipes, putLoadingStatus } from '../actions/Recipes';
 
 dayjs.extend(customParseFormat);
 
-const getUuidFromState = (state) => state.userReducer.uuid;
-
-const getUserNameFromState = (state) => state.userReducer.name;
-
-const getUserAvatarFromState = (state) => state.userReducer.avatar;
-
 const fetchNewPostKey = () => database.ref('recipes').push().key;
 
 const getPostUserDetails = (uuid) =>
@@ -115,43 +109,41 @@ function* getRefreshedPostsSaga() {
   }
 }
 
-function* uploadPostWithImagesSaga({ payload }) {
+function* uploadRecipeWithImagesSaga({ payload }) {
   const { recipeType, title, description, ingredients, postImages } = payload;
   yield put(putLoadingStatus(true));
 
   const postKey = yield call(fetchNewPostKey);
   const images = {};
 
+  console.log(`post saga`);
+
   try {
-    yield all(
-      postImages.map(function* (image) {
-        const re = /(?:\.([^.]+))?$/;
-        const ext = re.exec(image.imgUri)[1];
-        const currentFileType = ext;
-        const response = yield fetch(image.imgUri);
-        const blob = yield response.blob();
-        const fileName = image.imgId;
-        const fileNameWithExt = `${fileName}.${currentFileType}`;
-        const filePath = `Recipes/${postKey}/${fileNameWithExt}`;
+    const re = /(?:\.([^.]+))?$/;
+    const ext = re.exec(postImages.imgUri)[1];
+    const currentFileType = ext;
+    const response = yield fetch(postImages.imgUri);
+    const blob = yield response.blob();
+    const fileName = postImages.imgId;
+    const fileNameWithExt = `${fileName}.${currentFileType}`;
+    const filePath = `Recipes/${postKey}/${fileNameWithExt}`;
 
-        const task = rsf.storage.uploadFile(filePath, blob);
+    const task = rsf.storage.uploadFile(filePath, blob);
 
-        task.on('state_changed', (snapshot) => {
-          const pct = (snapshot.bytesTransferred * 100) / snapshot.totalBytes;
-          console.log(`${pct}%`);
-        });
+    task.on('state_changed', (snapshot) => {
+      const pct = (snapshot.bytesTransferred * 100) / snapshot.totalBytes;
+      console.log(`${pct}%`);
+    });
 
-        // Wait for upload to complete
-        yield task;
+    // Wait for upload to complete
+    yield task;
 
-        const imageUrl = yield call(rsf.storage.getDownloadURL, filePath);
+    const imageUrl = yield call(rsf.storage.getDownloadURL, filePath);
 
-        images[fileName] = {
-          image_name: fileNameWithExt,
-          image_url: imageUrl,
-        };
-      })
-    );
+    images[fileName] = {
+      image_name: fileNameWithExt,
+      image_url: imageUrl,
+    };
   } catch (error) {
     yield put(putLoadingStatus(false));
     alert(`Error uploading post images! ${error}`);
@@ -346,7 +338,7 @@ export default function* Recipes() {
     takeLatest(actions.GET.REFRESHED_RECIPES, getRefreshedPostsSaga),
     takeLatest(actions.DELETE.RECIPES, deletePostSaga),
     takeLatest(actions.DELETE.SINGLE_RECIPES_IMAGE, deletePostImageSaga),
-    takeLatest(actions.UPLOAD.RECIPES_IMAGES, uploadPostWithImagesSaga),
+    takeLatest(actions.UPLOAD.RECIPES_IMAGES, uploadRecipeWithImagesSaga),
     takeLatest(
       actions.UPLOAD.EDITED_RECIPES_IMAGES,
       uploadEditedPostWithImagesSaga

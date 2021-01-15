@@ -5,7 +5,7 @@ const colours = {
   themeSecondary: '#19323C',
   themeSecondaryLight: '#435B66',
   themeSecondaryDark: '#000A16',
-  veryLightPink: '#ffcbb5',
+  veryLightPink: '#FFB1AB',
   black: '#000000',
   charcoal: '#474747',
   gray: '#7d7d7d',

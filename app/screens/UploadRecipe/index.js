@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  TextInput,
   Platform,
   StyleSheet,
 } from 'react-native';
@@ -15,7 +16,7 @@ import { Picker } from 'native-base';
 import PropTypes from 'prop-types';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
-import RegularTextBox from '../../components/RegularTextBox';
+import AppBar from '../../components/AppBar';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,8 +33,7 @@ const styles = StyleSheet.create({
     width: 240,
     margin: 5,
     backgroundColor: 'lightgrey',
-    borderWidth: 1.5,
-    borderTopColor: 'black',
+    borderRadius: 4,
   },
   imagePreview: {
     margin: 5,
@@ -151,18 +151,33 @@ export default function UploadRecipe({ route, navigation }) {
   };
 
   const validatePost = async () => {
+    if (imageSelected === false) {
+      alert('Please select an image.');
+    }
     if (title === '') {
-      alert('Recipe Title must not be empty!');
+      alert('Recipe Title must not be empty.');
     }
     if (ingredients === '') {
-      alert('Recipe Ingredients must not be empty!');
+      alert('Recipe Ingredients must not be empty.');
     }
     if (description === '') {
-      alert('Recipe Description must not be empty!');
+      alert('Recipe Description must not be empty.');
     }
-    if (title !== '' && ingredients !== '' && description !== '') {
+    if (
+      imageSelected &&
+      title !== '' &&
+      ingredients !== '' &&
+      description !== ''
+    ) {
+      console.log(`post clicked`);
       dispatch(
-        uploadRecipeWithImages(title, ingredients, description, imgUriArr)
+        uploadRecipeWithImages(
+          recipeType,
+          title,
+          ingredients,
+          description,
+          imgUriArr
+        )
       );
     }
   };
@@ -198,80 +213,101 @@ export default function UploadRecipe({ route, navigation }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
-      <ScrollView>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <>
-            {imageSelected && <RenderImg />}
+      <AppBar />
+      {isLoading ? (
+        <LoadingIndicator progress={progress} />
+      ) : (
+        <ScrollView>
+          {imageSelected && <RenderImg />}
 
-            <Picker
-              style={{ width: 120 }}
-              selectedValue={recipeType}
-              onValueChange={(value) => setRecipeType(value)}
+          <Picker
+            style={{ width: '50%', alignSelf: 'center' }}
+            selectedValue={recipeType}
+            onValueChange={(value) => setRecipeType(value)}
+          >
+            <Picker.Item label="Breakfast" value="breakfast_recipes" />
+            <Picker.Item label="Lunch" value="lunch_recipes" />
+            <Picker.Item label="Dinner" value="dinner_recipes" />
+          </Picker>
+
+          <View style={{ margin: 20 }}>
+            <Text>Title</Text>
+            <View
+              style={{
+                backgroundColor: colours.veryLightPink,
+                borderRadius: 3,
+                padding: 5,
+              }}
             >
-              <Picker.Item label="Breakfast" value="breakfast_recipes" />
-              <Picker.Item label="Lunch" value="lunch_recipes" />
-              <Picker.Item label="Dinner" value="dinner_recipes" />
-            </Picker>
-
-            <View style={{ margin: 20 }}>
-              <RegularTextBox
-                label="Recipe Title"
+              <TextInput
+                ref={fieldRefTitle}
                 value={title}
-                handleChange={setTitle}
-                errorTxt="Required"
-                isError={title === ''}
+                onChangeText={(text) => setTitle(text)}
               />
+            </View>
 
-              <RegularTextBox
-                label="Recipe Ingredients"
+            <Text>Ingredients</Text>
+            <View
+              style={{
+                backgroundColor: colours.veryLightPink,
+                borderRadius: 3,
+                padding: 5,
+              }}
+            >
+              <TextInput
+                ref={fieldRefIngr}
                 multiline
                 value={ingredients}
-                handleChange={setIngredients}
-                errorTxt="Required"
-                isError={ingredients === ''}
+                onChangeText={(text) => setIngredients(text)}
               />
+            </View>
 
-              <RegularTextBox
-                label="Recipe Description"
+            <Text>Description</Text>
+            <View
+              style={{
+                backgroundColor: colours.veryLightPink,
+                borderRadius: 3,
+                padding: 5,
+              }}
+            >
+              <TextInput
+                ref={fieldRefDescr}
                 multiline
                 value={description}
-                handleChange={setDescription}
-                errorTxt="Required"
-                isError={description === ''}
+                onChangeText={(text) => setDescription(text)}
               />
             </View>
+          </View>
 
-            <View>
-              <View style={styles.componentContainer}>
-                {imageSelected ? (
-                  <TouchableOpacity
-                    onPress={() => clearAllImages()}
-                    style={styles.removeBtn}
-                  >
-                    <Text style={styles.btnText}>Remove Photo</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => findNewImage()}
-                    style={styles.regBtn}
-                  >
-                    <Text style={styles.btnText}>Add Images</Text>
-                  </TouchableOpacity>
-                )}
+          <View>
+            <View style={styles.componentContainer}>
+              <TouchableOpacity
+                onPress={() => findNewImage()}
+                style={styles.regBtn}
+              >
+                <Text style={styles.btnText}>
+                  {imageSelected ? `Change Image` : `Add Image`}
+                </Text>
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  onPress={() => validatePost()}
-                  style={styles.postBtn}
-                >
-                  <Text style={styles.btnText}>Post</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                disabled={
+                  imageSelected &&
+                  title !== '' &&
+                  ingredients !== '' &&
+                  description !== ''
+                    ? false
+                    : true
+                }
+                onPress={() => validatePost()}
+                style={styles.postBtn}
+              >
+                <Text style={styles.btnText}>Post</Text>
+              </TouchableOpacity>
             </View>
-          </>
-        </TouchableWithoutFeedback>
-      </ScrollView>
-
-      {isLoading && <LoadingIndicator progress={progress} />}
+          </View>
+        </ScrollView>
+      )}
     </KeyboardAvoidingView>
   );
 }

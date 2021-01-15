@@ -42,8 +42,6 @@ const getUserProfile = (uid) =>
 function* syncUserSaga() {
   const user = yield call(onAuthStateChanged);
 
-  console.log(user);
-
   if (user) {
     const { dbUser } = yield call(getUserProfile, user.uid);
 
