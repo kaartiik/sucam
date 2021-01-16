@@ -158,7 +158,7 @@ const RecipePreview = ({ feed, navigation }) => {
         </TouchableOpacity>
       </View>
     );
-  } else {
+  } else if (feed.length > 3) {
     return (
       <View>
         <View style={{ flexDirection: 'row' }}>
@@ -210,6 +210,8 @@ const RecipePreview = ({ feed, navigation }) => {
         </View>
       </View>
     );
+  } else {
+    return <View />;
   }
 };
 

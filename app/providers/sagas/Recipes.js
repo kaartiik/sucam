@@ -41,6 +41,7 @@ const formatPost = (data) => {
     recipe_description,
     recipe_uid,
     recipe_type,
+    recipe_video_url,
     created_at,
     is_image,
     image,
@@ -52,6 +53,7 @@ const formatPost = (data) => {
     rDescr: recipe_description,
     rUid: recipe_uid,
     rType: recipe_type,
+    rURL: recipe_video_url,
     rTime: dayjs(created_at).format('DD MMMM YYYY'),
     rImage: is_image,
   };
@@ -180,13 +182,18 @@ function* getRefreshedPostsSaga() {
 }
 
 function* uploadRecipeWithImagesSaga({ payload }) {
-  const { recipeType, title, description, ingredients, postImages } = payload;
+  const {
+    recipeType,
+    title,
+    description,
+    ingredients,
+    videoURL,
+    postImages,
+  } = payload;
   yield put(putLoadingStatus(true));
 
   const postKey = yield call(fetchNewPostKey);
   let image = {};
-
-  console.log(`post saga`);
 
   try {
     const re = /(?:\.([^.]+))?$/;
@@ -202,7 +209,6 @@ function* uploadRecipeWithImagesSaga({ payload }) {
 
     task.on('state_changed', (snapshot) => {
       const pct = (snapshot.bytesTransferred * 100) / snapshot.totalBytes;
-      console.log(`${pct}%`);
     });
 
     // Wait for upload to complete
@@ -224,10 +230,12 @@ function* uploadRecipeWithImagesSaga({ payload }) {
     image,
     created_at: Date.now(),
     is_image: true,
+    recipe_type: recipeType,
     recipe_description: description,
     recipe_title: title,
     recipe_ingredients: ingredients,
     recipe_uid: postKey,
+    recipe_video_url: videoURL,
   };
 
   try {
@@ -248,6 +256,7 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
     title,
     description,
     ingredients,
+    videoURL,
     postImages,
     onSuccess,
   } = payload;
@@ -300,10 +309,12 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
     image,
     created_at: Date.now(),
     is_image: true,
+    recipe_type: recipeType,
     recipe_description: description,
     recipe_title: title,
     recipe_ingredients: ingredients,
     recipe_uid: recipeUuid,
+    recipe_video_url: videoURL,
   };
 
   try {

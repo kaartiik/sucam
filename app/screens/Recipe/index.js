@@ -10,6 +10,7 @@ import {
   Animated,
   Touchable,
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardItem } from 'native-base';
@@ -160,6 +161,18 @@ function Recipe({ route, navigation }) {
         <Text style={styles.subHeader}>Steps</Text>
 
         <Text style={styles.descriptionText}>{recipeItem.rDescr}</Text>
+
+        {recipeItem.rURL !== '' && (
+          <>
+            <View style={styles.spacingComponent} />
+
+            <Text style={styles.subHeader}>Video</Text>
+            <WebView
+              source={{ uri: recipeItem.rURL }}
+              style={{ height: 200, width: 400 }}
+            />
+          </>
+        )}
 
         {isAdmin && (
           <TouchableOpacity

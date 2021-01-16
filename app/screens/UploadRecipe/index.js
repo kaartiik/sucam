@@ -109,10 +109,12 @@ export default function UploadRecipe({ route, navigation }) {
   const [camera, setCamera] = useState('');
   const [cameraRoll, setCameraRoll] = useState('');
   const [imgUriArr, setImgUriArr] = useState(null);
+  const [videoURL, setVideoURL] = useState('');
 
   const fieldRefTitle = useRef();
   const fieldRefIngr = useRef();
   const fieldRefDescr = useRef();
+  const fieldRefURL = useRef();
 
   const { isLoading } = useSelector((state) => ({
     isLoading: state.recipeReducer.isLoading,
@@ -122,9 +124,11 @@ export default function UploadRecipe({ route, navigation }) {
     fieldRefTitle.current.clear();
     fieldRefIngr.current.clear();
     fieldRefDescr.current.clear();
+    fieldRefURL.current.clear();
     setTitle('');
     setIngredients('');
     setDescription('');
+    setVideoURL('');
     setImgUriArr(null);
     setImageSelected(false);
   };
@@ -176,18 +180,6 @@ export default function UploadRecipe({ route, navigation }) {
   };
 
   const validatePost = async () => {
-    if (imageSelected === false) {
-      alert('Please select an image.');
-    }
-    if (title === '') {
-      alert('Recipe Title must not be empty.');
-    }
-    if (ingredients === '') {
-      alert('Recipe Ingredients must not be empty.');
-    }
-    if (description === '') {
-      alert('Recipe Description must not be empty.');
-    }
     if (
       imageSelected &&
       title !== '' &&
@@ -201,8 +193,13 @@ export default function UploadRecipe({ route, navigation }) {
           title,
           ingredients,
           description,
+          videoURL,
           imgUriArr
         )
+      );
+    } else {
+      alert(
+        `Make sure image is selected, title, ingredients and description fields are not empty.`
       );
     }
   };
@@ -262,6 +259,15 @@ export default function UploadRecipe({ route, navigation }) {
                 multiline
                 value={description}
                 onChangeText={(text) => setDescription(text)}
+              />
+            </View>
+
+            <Text>Video URL</Text>
+            <View style={styles.textboxContainer}>
+              <TextInput
+                ref={fieldRefURL}
+                value={videoURL}
+                onChangeText={(text) => setVideoURL(text)}
               />
             </View>
           </View>

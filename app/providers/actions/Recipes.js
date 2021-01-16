@@ -68,10 +68,18 @@ export const uploadRecipeWithImages = (
   title,
   ingredients,
   description,
+  videoURL,
   postImages
 ) => ({
   type: actions.UPLOAD.RECIPES_IMAGES,
-  payload: { recipeType, title, description, ingredients, postImages },
+  payload: {
+    recipeType,
+    title,
+    description,
+    ingredients,
+    videoURL,
+    postImages,
+  },
 });
 
 export const uploadEditedRecipeWithImages = (
@@ -80,6 +88,7 @@ export const uploadEditedRecipeWithImages = (
   title,
   ingredients,
   description,
+  videoURL,
   postImages,
   onSuccess
 ) => ({
@@ -90,6 +99,7 @@ export const uploadEditedRecipeWithImages = (
     title,
     description,
     ingredients,
+    videoURL,
     postImages,
     onSuccess,
   },

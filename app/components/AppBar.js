@@ -29,20 +29,17 @@ const AppBar = () => {
           elevation: 8,
         }}
       >
-        <Left>
+        <Left />
+        <Body>
           <Image
             // eslint-disable-next-line global-require
             source={require('../../assets/ResipiIbu.png')}
             resizeMode="contain"
             style={{ alignSelf: 'flex-start', height: '100%', width: '150%' }}
           />
-        </Left>
+        </Body>
 
-        <Right>
-          <TouchableOpacity>
-            <Ionicons name="ios-search" size={18} color="white" />
-          </TouchableOpacity>
-        </Right>
+        <Right />
       </Header>
     </View>
   );

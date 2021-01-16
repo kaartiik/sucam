@@ -100,10 +100,12 @@ export default function EditRecipe({ route, navigation }) {
         }
       : null
   );
+  const [videoURL, setVideoURL] = useState(recipeItem ? recipeItem.rURL : '');
 
   const fieldRefTitle = useRef();
   const fieldRefIngr = useRef();
   const fieldRefDescr = useRef();
+  const fieldRefURL = useRef();
 
   const { isLoading } = useSelector((state) => ({
     isLoading: state.recipeReducer.isLoading,
@@ -113,9 +115,11 @@ export default function EditRecipe({ route, navigation }) {
     fieldRefTitle.current.clear();
     fieldRefIngr.current.clear();
     fieldRefDescr.current.clear();
+    fieldRefURL.current.clear();
     setTitle('');
     setIngredients('');
     setDescription('');
+    setVideoURL('');
     setImgUriArr(null);
     setImageSelected(false);
   };
@@ -180,6 +184,7 @@ export default function EditRecipe({ route, navigation }) {
           title,
           ingredients,
           description,
+          videoURL,
           imgUriArr,
           () => navigation.goBack()
         )
@@ -298,6 +303,15 @@ export default function EditRecipe({ route, navigation }) {
                 multiline
                 value={description}
                 onChangeText={(text) => setDescription(text)}
+              />
+            </View>
+
+            <Text>Video URL</Text>
+            <View style={styles.textboxContainer}>
+              <TextInput
+                ref={fieldRefURL}
+                value={videoURL}
+                onChangeText={(text) => setVideoURL(text)}
               />
             </View>
           </View>
