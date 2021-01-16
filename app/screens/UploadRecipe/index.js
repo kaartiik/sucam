@@ -35,6 +35,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     borderRadius: 4,
   },
+  textboxContainer: {
+    backgroundColor: colours.veryLightPink,
+    borderRadius: 3,
+    padding: 5,
+  },
   imagePreview: {
     margin: 5,
     resizeMode: 'contain',
@@ -71,6 +76,26 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+const RenderImg = ({ imgUriArr, setImgUriArr, setImageSelected }) => {
+  return (
+    <View style={styles.imagePreviewContainer}>
+      <Image source={{ uri: imgUriArr.imgUri }} style={styles.imagePreview} />
+      <TouchableOpacity style={{ position: 'absolute', bottom: 0, right: 0 }}>
+        <Ionicons
+          style={{ padding: 10 }}
+          name="ios-trash"
+          size={22}
+          color="red"
+          onPress={() => {
+            setImageSelected(false);
+            setImgUriArr(null);
+          }}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export default function UploadRecipe({ route, navigation }) {
   // const { isAdmin } = useContext(AuthContext);
@@ -182,32 +207,6 @@ export default function UploadRecipe({ route, navigation }) {
     }
   };
 
-  const clearAllImages = () => {
-    setImgUriArr(null);
-
-    setImageSelected(false);
-  };
-
-  const RenderImg = () => {
-    return (
-      <View style={styles.imagePreviewContainer}>
-        <Image source={{ uri: imgUriArr.imgUri }} style={styles.imagePreview} />
-        <TouchableOpacity style={{ position: 'absolute', bottom: 0, right: 0 }}>
-          <Ionicons
-            style={{ padding: 10 }}
-            name="ios-trash"
-            size={22}
-            color="red"
-            onPress={() => {
-              setImageSelected(false);
-              setImgUriArr(null);
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -218,7 +217,13 @@ export default function UploadRecipe({ route, navigation }) {
         <LoadingIndicator progress={progress} />
       ) : (
         <ScrollView>
-          {imageSelected && <RenderImg />}
+          {imageSelected && (
+            <RenderImg
+              imgUriArr={imgUriArr}
+              setImgUriArr={setImgUriArr}
+              setImageSelected={setImageSelected}
+            />
+          )}
 
           <Picker
             style={{ width: '50%', alignSelf: 'center' }}
@@ -232,13 +237,7 @@ export default function UploadRecipe({ route, navigation }) {
 
           <View style={{ margin: 20 }}>
             <Text>Title</Text>
-            <View
-              style={{
-                backgroundColor: colours.veryLightPink,
-                borderRadius: 3,
-                padding: 5,
-              }}
-            >
+            <View style={styles.textboxContainer}>
               <TextInput
                 ref={fieldRefTitle}
                 value={title}
@@ -247,13 +246,7 @@ export default function UploadRecipe({ route, navigation }) {
             </View>
 
             <Text>Ingredients</Text>
-            <View
-              style={{
-                backgroundColor: colours.veryLightPink,
-                borderRadius: 3,
-                padding: 5,
-              }}
-            >
+            <View style={styles.textboxContainer}>
               <TextInput
                 ref={fieldRefIngr}
                 multiline
@@ -263,13 +256,7 @@ export default function UploadRecipe({ route, navigation }) {
             </View>
 
             <Text>Description</Text>
-            <View
-              style={{
-                backgroundColor: colours.veryLightPink,
-                borderRadius: 3,
-                padding: 5,
-              }}
-            >
+            <View style={styles.textboxContainer}>
               <TextInput
                 ref={fieldRefDescr}
                 multiline

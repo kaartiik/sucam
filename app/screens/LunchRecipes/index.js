@@ -7,9 +7,7 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,10 +17,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 
 import colours from '../../providers/constants/colours';
 
-import {
-  getBreakfastRecipes,
-  deleteRecipe,
-} from '../../providers/actions/Recipes';
+import { getLunchRecipes, deleteRecipe } from '../../providers/actions/Recipes';
 
 const styles = StyleSheet.create({
   divider: {
@@ -101,20 +96,20 @@ RenderItem.propTypes = {
   item: PropTypes.object.isRequired,
 };
 
-function BreakfastRecipes({ navigation }) {
+function LunchRecipes({ navigation }) {
   const dispatch = useDispatch();
 
-  const { isAdmin, breakfastRecipes, isLoading } = useSelector((state) => ({
+  const { isAdmin, lunchRecipes, isLoading } = useSelector((state) => ({
     isAdmin: state.userReducer.isAdmin,
-    breakfastRecipes: state.recipeReducer.breakfastRecipes,
+    lunchRecipes: state.recipeReducer.lunchRecipes,
     isLoading: state.recipeReducer.isLoading,
   }));
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(getBreakfastRecipes());
+      dispatch(getLunchRecipes());
       return () => {
-        dispatch(getBreakfastRecipes());
+        dispatch(getLunchRecipes());
       };
     }, [])
   );
@@ -128,10 +123,10 @@ function BreakfastRecipes({ navigation }) {
       ) : (
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          data={breakfastRecipes}
+          data={lunchRecipes}
           ListHeaderComponent={() => (
             <View style={{ padding: 10 }}>
-              <Text style={{ fontSize: 18 }}>Breakfast Recipes</Text>
+              <Text style={{ fontSize: 18 }}>Lunch Recipes</Text>
 
               <View style={styles.divider} />
             </View>
@@ -155,4 +150,4 @@ function BreakfastRecipes({ navigation }) {
   );
 }
 
-export default BreakfastRecipes;
+export default LunchRecipes;

@@ -7,9 +7,7 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,7 +18,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import colours from '../../providers/constants/colours';
 
 import {
-  getBreakfastRecipes,
+  getDinnerRecipes,
   deleteRecipe,
 } from '../../providers/actions/Recipes';
 
@@ -101,20 +99,20 @@ RenderItem.propTypes = {
   item: PropTypes.object.isRequired,
 };
 
-function BreakfastRecipes({ navigation }) {
+function DinnerRecipes({ navigation }) {
   const dispatch = useDispatch();
 
-  const { isAdmin, breakfastRecipes, isLoading } = useSelector((state) => ({
+  const { isAdmin, dinnerRecipes, isLoading } = useSelector((state) => ({
     isAdmin: state.userReducer.isAdmin,
-    breakfastRecipes: state.recipeReducer.breakfastRecipes,
+    dinnerRecipes: state.recipeReducer.dinnerRecipes,
     isLoading: state.recipeReducer.isLoading,
   }));
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(getBreakfastRecipes());
+      dispatch(getDinnerRecipes());
       return () => {
-        dispatch(getBreakfastRecipes());
+        dispatch(getDinnerRecipes());
       };
     }, [])
   );
@@ -128,10 +126,10 @@ function BreakfastRecipes({ navigation }) {
       ) : (
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          data={breakfastRecipes}
+          data={dinnerRecipes}
           ListHeaderComponent={() => (
             <View style={{ padding: 10 }}>
-              <Text style={{ fontSize: 18 }}>Breakfast Recipes</Text>
+              <Text style={{ fontSize: 18 }}>Dinner Recipes</Text>
 
               <View style={styles.divider} />
             </View>
@@ -155,4 +153,4 @@ function BreakfastRecipes({ navigation }) {
   );
 }
 
-export default BreakfastRecipes;
+export default DinnerRecipes;

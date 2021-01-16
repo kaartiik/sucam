@@ -7,10 +7,8 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  TextInput,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,10 +17,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 
 import colours from '../../providers/constants/colours';
 
-import {
-  getBreakfastRecipes,
-  deleteRecipe,
-} from '../../providers/actions/Recipes';
+import { deleteRecipe } from '../../providers/actions/Recipes';
 
 const styles = StyleSheet.create({
   divider: {
@@ -52,6 +47,16 @@ const styles = StyleSheet.create({
   flatlistEmptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  searchBox: {
+    marginTop: 10,
+    marginHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colours.veryLightPink,
+    borderRadius: 3,
+    padding: 5,
   },
 });
 
@@ -101,41 +106,60 @@ RenderItem.propTypes = {
   item: PropTypes.object.isRequired,
 };
 
-function BreakfastRecipes({ navigation }) {
+function AllRecipes({ navigation }) {
   const dispatch = useDispatch();
+  const [search, setSearch] = useState('');
 
-  const { isAdmin, breakfastRecipes, isLoading } = useSelector((state) => ({
+  const { isAdmin, recipeFeed, isLoading } = useSelector((state) => ({
     isAdmin: state.userReducer.isAdmin,
-    breakfastRecipes: state.recipeReducer.breakfastRecipes,
+    recipeFeed: state.recipeReducer.recipeFeed,
     isLoading: state.recipeReducer.isLoading,
   }));
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(getBreakfastRecipes());
-      return () => {
-        dispatch(getBreakfastRecipes());
-      };
-    }, [])
-  );
+  const [data, setData] = useState([...recipeFeed]);
+
+  const searchData = (searchText) => {
+    let newData = [];
+    if (searchText) {
+      newData = recipeFeed.filter((item) => {
+        const uSearchText = searchText.toUpperCase();
+        const uTitle = item.rTitle.toUpperCase();
+
+        return uTitle.indexOf(uSearchText) > -1;
+      });
+      setData([...newData]);
+    } else {
+      setData([...recipeFeed]);
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
       <AppBar />
+
+      <View style={{ padding: 10 }}>
+        <Text style={{ fontSize: 18 }}>All Recipes</Text>
+
+        <View style={styles.divider} />
+      </View>
+
+      <View style={styles.searchBox}>
+        <TextInput
+          placeholder="Search..."
+          value={search}
+          onChangeText={(text) => {
+            setSearch(text);
+            searchData(text);
+          }}
+        />
+      </View>
 
       {isLoading ? (
         <LoadingIndicator />
       ) : (
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          data={breakfastRecipes}
-          ListHeaderComponent={() => (
-            <View style={{ padding: 10 }}>
-              <Text style={{ fontSize: 18 }}>Breakfast Recipes</Text>
-
-              <View style={styles.divider} />
-            </View>
-          )}
+          data={data}
           renderItem={({ item, index }) => (
             <RenderItem
               key={index}
@@ -155,4 +179,4 @@ function BreakfastRecipes({ navigation }) {
   );
 }
 
-export default BreakfastRecipes;
+export default AllRecipes;

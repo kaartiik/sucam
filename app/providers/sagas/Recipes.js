@@ -111,7 +111,7 @@ function* getLunchRecipesSaga() {
     const data = yield call(rsf.database.read, 'lunch_recipes');
     const exists = data !== null && data !== undefined;
     if (exists) {
-      const recipesUnformattedArr = Object.values(postsData);
+      const recipesUnformattedArr = Object.values(data);
 
       const recipesArr = yield all(
         recipesUnformattedArr.map(function* (item) {
@@ -135,7 +135,7 @@ function* getDinnerRecipesSaga() {
     const data = yield call(rsf.database.read, 'dinner_recipes');
     const exists = data !== null && data !== undefined;
     if (exists) {
-      const recipesUnformattedArr = Object.values(postsData);
+      const recipesUnformattedArr = Object.values(data);
 
       const recipesArr = yield all(
         recipesUnformattedArr.map(function* (item) {

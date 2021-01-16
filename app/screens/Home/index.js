@@ -60,7 +60,10 @@ const NavIcons = ({ navigation }) => (
         <Text style={styles.iconTitle}>Breakfast</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ marginLeft: 20, alignItems: 'center' }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('LunchRecipes')}
+        style={{ marginLeft: 20, alignItems: 'center' }}
+      >
         <Image
           source={require('../../../assets/lunch.png')}
           style={{ height: 80, width: 80 }}
@@ -70,7 +73,10 @@ const NavIcons = ({ navigation }) => (
     </View>
 
     <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity style={{ alignItems: 'center' }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('DinnerRecipes')}
+        style={{ alignItems: 'center' }}
+      >
         <Image
           source={require('../../../assets/dinner.png')}
           style={{ height: 80, width: 80 }}
@@ -81,10 +87,12 @@ const NavIcons = ({ navigation }) => (
   </View>
 );
 
-const RecipePreview = ({ feed }) => {
+const RecipePreview = ({ feed, navigation }) => {
   if (feed.length === 1) {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Recipe', { recipeItem: feed[0] })}
+      >
         <ImageBackground
           source={{ uri: feed[0].image.image_url }}
           style={styles.previewBGImgFull}
@@ -94,14 +102,18 @@ const RecipePreview = ({ feed }) => {
   } else if (feed.length === 2) {
     return (
       <View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Recipe', { recipeItem: feed[0] })}
+        >
           <ImageBackground
             source={{ uri: feed[0].image.image_url }}
             style={styles.previewBGImgFull}
           />
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Recipe', { recipeItem: feed[1] })}
+        >
           <ImageBackground
             source={{ uri: feed[1].image.image_url }}
             style={styles.previewBGImgFull}
@@ -113,14 +125,22 @@ const RecipePreview = ({ feed }) => {
     return (
       <View>
         <View style={{ justifyContent: 'center', flexDirection: 'row' }}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Recipe', { recipeItem: feed[0] })
+            }
+          >
             <ImageBackground
               source={{ uri: feed[0].image.image_url }}
               style={styles.previewBGImg}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Recipe', { recipeItem: feed[1] })
+            }
+          >
             <ImageBackground
               source={{ uri: feed[1].image.image_url }}
               style={styles.previewBGImg}
@@ -128,7 +148,9 @@ const RecipePreview = ({ feed }) => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Recipe', { recipeItem: feed[2] })}
+        >
           <ImageBackground
             source={{ uri: feed[2].image.image_url }}
             style={styles.previewBGImgFull}
@@ -140,14 +162,22 @@ const RecipePreview = ({ feed }) => {
     return (
       <View>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Recipe', { recipeItem: feed[0] })
+            }
+          >
             <ImageBackground
               source={{ uri: feed[0].image.image_url }}
               style={styles.previewBGImg}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Recipe', { recipeItem: feed[1] })
+            }
+          >
             <ImageBackground
               source={{ uri: feed[1].image.image_url }}
               style={styles.previewBGImg}
@@ -156,14 +186,22 @@ const RecipePreview = ({ feed }) => {
         </View>
 
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Recipe', { recipeItem: feed[2] })
+            }
+          >
             <ImageBackground
               source={{ uri: feed[2].image.image_url }}
               style={styles.previewBGImg}
             />
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Recipe', { recipeItem: feed[3] })
+            }
+          >
             <ImageBackground
               source={{ uri: feed[3].image.image_url }}
               style={styles.previewBGImg}
@@ -211,7 +249,7 @@ function Home({ navigation }) {
       ) : (
         <ScrollView keyboardDismissMode="on-drag">
           <NavIcons navigation={navigation} />
-          <RecipePreview feed={recipeFeed} />
+          <RecipePreview feed={recipeFeed} navigation={navigation} />
         </ScrollView>
       )}
     </KeyboardAvoidingView>
