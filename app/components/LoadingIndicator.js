@@ -1,6 +1,7 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import colours from '../providers/constants/colours';
 
 const styles = StyleSheet.create({
   container: {
@@ -13,7 +14,7 @@ const styles = StyleSheet.create({
 
 const Loading = () => (
   <View style={styles.container}>
-    <ActivityIndicator size="large" color="black" />
+    <ActivityIndicator size="large" color={colours.themePrimary} />
   </View>
 );
 

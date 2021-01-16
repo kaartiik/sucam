@@ -14,18 +14,18 @@ import {
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import rsf, { database } from '../../providers/config';
-import { actions, putRecipes, putLoadingStatus } from '../actions/Recipes';
+import {
+  actions,
+  putRecipes,
+  putBreakfastRecipes,
+  putLunchRecipes,
+  putDinnerRecipes,
+  putLoadingStatus,
+} from '../actions/Recipes';
 
 dayjs.extend(customParseFormat);
 
 const fetchNewPostKey = () => database.ref('recipes').push().key;
-
-const getPostUserDetails = (uuid) =>
-  database
-    .ref('Users')
-    .child(uuid)
-    .once('value')
-    .then((snapshot) => ({ userData: snapshot.val() || {} }));
 
 const fetchRefreshedPosts = () =>
   database
@@ -33,53 +33,116 @@ const fetchRefreshedPosts = () =>
     .once('value')
     .then((snapshot) => ({ postsData: snapshot.val() || {} }));
 
-const formatPost = ({ data, name, avatar }) => {
+const formatPost = (data) => {
   const {
-    user_uid,
-    user_name,
-    user_avatar,
-    post_title,
-    post_description,
-    post_uid,
-    updated_at,
+    recipe_title,
+    recipe_ingredients,
+    recipe_description,
+    recipe_uid,
+    created_at,
     is_image,
-    is_single_image,
-    images,
+    image,
   } = data;
   return {
-    images,
-    uid: user_uid,
-    uName: name || 'Unavailable',
-    uDp: avatar || '',
-    pTitle: post_title,
-    pDescr: post_description,
-    pId: post_uid,
-    pTime: dayjs(updated_at).format('DD MMMM YYYY'),
-    pImage: is_image,
-    pSingleImg: is_single_image,
+    image,
+    rTitle: recipe_title,
+    rIngr: recipe_ingredients,
+    rDescr: recipe_description,
+    rUid: recipe_uid,
+    rTime: dayjs(created_at).format('DD MMMM YYYY'),
+    rImage: is_image,
   };
 };
 
-function* getPostsSaga() {
-  const channel = yield call(rsf.database.channel, 'posts');
+function* getRecipesSaga() {
+  const channel = yield call(rsf.database.channel, 'recipes');
 
   while (true) {
     const { snapshot } = yield take(channel);
     if (snapshot !== null && snapshot !== undefined) {
-      const postsUnformattedArr = snapshot.val()
+      const recipeUnformattedArr = snapshot.val()
         ? Object.values(snapshot.val())
         : [];
-      const postsArr = yield all(
-        postsUnformattedArr.map(function* (data) {
-          const {
-            userData: { name, avatar },
-          } = yield call(getPostUserDetails, data.user_uid);
-          const postObject = yield call(formatPost, { data, name, avatar });
-          return postObject;
+      const recipeArr = yield all(
+        recipeUnformattedArr.map(function* (data) {
+          const recipeObject = yield call(formatPost, data);
+          return recipeObject;
         })
       );
-      yield put(putPosts(postsArr));
+      yield put(putRecipes(recipeArr));
     }
+  }
+}
+
+function* getBreakfastRecipesSaga() {
+  yield put(putLoadingStatus(true));
+  try {
+    const data = yield call(rsf.database.read, 'breakfast_recipes');
+    const exists = data !== null && data !== undefined;
+    if (exists) {
+      const recipesUnformattedArr = Object.values(data);
+
+      const recipesArr = yield all(
+        recipesUnformattedArr.map(function* (item) {
+          const recipeObject = yield call(formatPost, item);
+          return recipeObject;
+        })
+      );
+      yield put(putBreakfastRecipes(recipesArr));
+      yield put(putLoadingStatus(false));
+    }
+    yield put(putLoadingStatus(false));
+  } catch (error) {
+    yield put(putLoadingStatus(false));
+    alert(`Error retrieving recipes. ${error}`);
+  }
+}
+
+function* getLunchRecipesSaga() {
+  yield put(putLoadingStatus(true));
+  try {
+    const data = yield call(rsf.database.read, 'lunch_recipes');
+    const exists = data !== null && data !== undefined;
+    if (exists) {
+      const recipesUnformattedArr = Object.values(postsData);
+
+      const recipesArr = yield all(
+        recipesUnformattedArr.map(function* (item) {
+          const recipeObject = yield call(formatPost, item);
+          return recipeObject;
+        })
+      );
+      yield put(putLunchRecipes(recipesArr));
+      yield put(putLoadingStatus(false));
+    }
+    yield put(putLoadingStatus(false));
+  } catch (error) {
+    yield put(putLoadingStatus(false));
+    alert(`Error retrieving recipes. ${error}`);
+  }
+}
+
+function* getDinnerRecipesSaga() {
+  yield put(putLoadingStatus(true));
+  try {
+    const data = yield call(rsf.database.read, 'dinner_recipes');
+    const exists = data !== null && data !== undefined;
+    if (exists) {
+      const recipesUnformattedArr = Object.values(postsData);
+
+      const recipesArr = yield all(
+        recipesUnformattedArr.map(function* (item) {
+          const recipeObject = yield call(formatPost, item);
+          return recipeObject;
+        })
+      );
+      yield put(putDinnerRecipes(recipesArr));
+      yield put(putLoadingStatus(false));
+    }
+    yield put(putLoadingStatus(false));
+  } catch (error) {
+    yield put(putLoadingStatus(false));
+    alert(`Error retrieving recipes. ${error}`);
   }
 }
 
@@ -114,7 +177,7 @@ function* uploadRecipeWithImagesSaga({ payload }) {
   yield put(putLoadingStatus(true));
 
   const postKey = yield call(fetchNewPostKey);
-  const images = {};
+  let image = {};
 
   console.log(`post saga`);
 
@@ -140,7 +203,7 @@ function* uploadRecipeWithImagesSaga({ payload }) {
 
     const imageUrl = yield call(rsf.storage.getDownloadURL, filePath);
 
-    images[fileName] = {
+    image = {
       image_name: fileNameWithExt,
       image_url: imageUrl,
     };
@@ -151,7 +214,7 @@ function* uploadRecipeWithImagesSaga({ payload }) {
   }
 
   const postObject = {
-    images,
+    image,
     created_at: Date.now(),
     is_image: true,
     recipe_description: description,
@@ -333,8 +396,11 @@ function* deletePostImageSaga({ payload }) {
 }
 
 export default function* Recipes() {
-  // yield fork(getPostsSaga);
+  yield fork(getRecipesSaga);
   yield all([
+    takeLatest(actions.GET.BREAKFAST_RECIPES, getBreakfastRecipesSaga),
+    takeLatest(actions.GET.LUNCH_RECIPES, getLunchRecipesSaga),
+    takeLatest(actions.GET.DINNER_RECIPES, getDinnerRecipesSaga),
     takeLatest(actions.GET.REFRESHED_RECIPES, getRefreshedPostsSaga),
     takeLatest(actions.DELETE.RECIPES, deletePostSaga),
     takeLatest(actions.DELETE.SINGLE_RECIPES_IMAGE, deletePostImageSaga),

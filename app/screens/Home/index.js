@@ -11,6 +11,7 @@ import {
   ScrollView,
   Platform,
   StyleSheet,
+  ImageBackground,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,12 +29,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconTitle: { fontFamily: 'sans-serif-light', fontSize: 18, color: 'white' },
+  previewBGImg: {
+    opacity: 0.5,
+    height: 200,
+    width: 200,
+    resizeMode: 'contain',
+  },
+  previewBGImgFull: {
+    opacity: 0.5,
+    height: 200,
+    width: '100%',
+    resizeMode: 'contain',
+  },
 });
 
-const NavIcons = () => (
+const NavIcons = ({ navigation }) => (
   <View style={styles.navContainer}>
     <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity style={{ marginRight: 20, alignItems: 'center' }}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('BreakfastRecipes')}
+        style={{ marginRight: 20, alignItems: 'center' }}
+      >
         <Image
           source={require('../../../assets/breakfast.png')}
           style={{ height: 80, width: 80 }}
@@ -62,7 +78,105 @@ const NavIcons = () => (
   </View>
 );
 
-function Home() {
+const RecipePreview = ({ feed }) => {
+  if (feed.length === 1) {
+    return (
+      <TouchableOpacity>
+        <ImageBackground
+          source={{ uri: feed[0].image.image_url }}
+          style={styles.previewBGImgFull}
+        />
+      </TouchableOpacity>
+    );
+  } else if (feed.length === 2) {
+    return (
+      <View>
+        <TouchableOpacity>
+          <ImageBackground
+            source={{ uri: feed[0].image.image_url }}
+            style={styles.previewBGImg}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <ImageBackground
+            source={{ uri: feed[1].image.image_url }}
+            style={styles.previewBGImg}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  } else if (feed.length === 3) {
+    return (
+      <View>
+        <View style={{ justifyContent: 'center', flexDirection: 'row' }}>
+          <TouchableOpacity>
+            <ImageBackground
+              source={{ uri: feed[0].image.image_url }}
+              style={styles.previewBGImg}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <ImageBackground
+              source={{ uri: feed[1].image.image_url }}
+              style={styles.previewBGImg}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity>
+          <ImageBackground
+            source={{ uri: feed[2].image.image_url }}
+            style={styles.previewBGImgFull}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  } else {
+    return (
+      <View>
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity>
+            <ImageBackground
+              source={{ uri: feed[0].image.image_url }}
+              style={styles.previewBGImg}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <ImageBackground
+              source={{ uri: feed[1].image.image_url }}
+              style={styles.previewBGImg}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity>
+            <ImageBackground
+              source={{ uri: feed[2].image.image_url }}
+              style={styles.previewBGImg}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <ImageBackground
+              source={{ uri: feed[3].image.image_url }}
+              style={styles.previewBGImg}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+};
+
+function Home({ navigation }) {
+  const { recipeFeed } = useSelector((state) => ({
+    recipeFeed: state.recipeReducer.recipeFeed,
+  }));
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -70,7 +184,8 @@ function Home() {
     >
       <AppBar />
       <ScrollView keyboardDismissMode="on-drag">
-        <NavIcons />
+        <NavIcons navigation={navigation} />
+        <RecipePreview feed={recipeFeed} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

@@ -24,7 +24,6 @@ const config = {
 
 // Initialize Firebase
 if (!firebase.apps.length) {
-  alert(config);
   firebase.initializeApp(config);
 }
 

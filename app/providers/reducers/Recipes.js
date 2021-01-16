@@ -1,7 +1,10 @@
 import { actions } from '../actions/Recipes';
 
 const initialState = {
-  postFeed: [],
+  recipeFeed: [],
+  breakfastRecipes: [],
+  lunchRecipes: [],
+  dinnerRecipes: [],
   isLoading: false,
 };
 
@@ -10,7 +13,25 @@ export default function recipeReducer(state = initialState, action = {}) {
     case actions.PUT.RECIPES:
       return {
         ...state,
-        postFeed: action.payload,
+        recipeFeed: action.payload,
+      };
+
+    case actions.PUT.BREAKFAST_RECIPES:
+      return {
+        ...state,
+        breakfastRecipes: action.payload,
+      };
+
+    case actions.PUT.LUNCH_RECIPES:
+      return {
+        ...state,
+        lunchRecipes: action.payload,
+      };
+
+    case actions.PUT.DINNER_RECIPES:
+      return {
+        ...state,
+        dinnerRecipes: action.payload,
       };
 
     case actions.PUT.LOADING_STATUS:
