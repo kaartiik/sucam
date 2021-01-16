@@ -4,10 +4,11 @@ import {
   ImageBackground,
   SafeAreaView,
   StyleSheet,
-  Image,
+  TouchableOpacity,
   View,
   Text,
   Animated,
+  Touchable,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -87,10 +88,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 24,
   },
+  editButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+    padding: 10,
+    borderRadius: 4,
+    backgroundColor: colours.veryLightPink,
+  },
+  subHeader: { fontSize: 15, fontWeight: 'bold' },
+  descriptionText: { fontSize: 15 },
+  spacingComponent: { marginVertical: 10 },
 });
 
 function Recipe({ route, navigation }) {
   const { recipeItem } = route.params;
+
+  const { isAdmin } = useSelector((state) => ({
+    isAdmin: state.userReducer.isAdmin,
+  }));
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -125,14 +141,34 @@ function Recipe({ route, navigation }) {
   return (
     <SafeAreaView style={styles.saveArea}>
       <Animated.ScrollView
-        contentContainerStyle={{ paddingTop: HEADER_MAX_HEIGHT + 10 }}
+        contentContainerStyle={{
+          paddingTop: HEADER_MAX_HEIGHT + 10,
+          padding: 10,
+        }}
         scrollEventThrottle={16}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
         )}
       >
-        <Text style={{ fontSize: 15 }}>{recipeItem.rDescr}</Text>
+        <Text style={styles.subHeader}>Ingredients</Text>
+
+        <Text style={styles.descriptionText}>{recipeItem.rIngr}</Text>
+
+        <View style={styles.spacingComponent} />
+
+        <Text style={styles.subHeader}>Steps</Text>
+
+        <Text style={styles.descriptionText}>{recipeItem.rDescr}</Text>
+
+        {isAdmin && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate('EditRecipe', recipeItem)}
+            style={styles.editButton}
+          >
+            <Text>Edit</Text>
+          </TouchableOpacity>
+        )}
       </Animated.ScrollView>
       <Animated.View
         style={[

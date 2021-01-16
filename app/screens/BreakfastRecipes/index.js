@@ -12,12 +12,17 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
+
 import AppBar from '../../components/AppBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 
 import colours from '../../providers/constants/colours';
 
-import { getBreakfastRecipes } from '../../providers/actions/Recipes';
+import {
+  getBreakfastRecipes,
+  deleteRecipe,
+} from '../../providers/actions/Recipes';
 
 const styles = StyleSheet.create({
   divider: {
@@ -46,7 +51,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const RenderItem = ({ item, navigation }) => {
+const RenderItem = ({ item, navigation, isAdmin }) => {
+  const dispatch = useDispatch();
+
   return (
     <View style={{ marginTop: 10, padding: 10 }}>
       <TouchableOpacity
@@ -69,6 +76,18 @@ const RenderItem = ({ item, navigation }) => {
           </Text>
           <Text style={styles.recipeDescription}>{item.rTime}</Text>
         </View>
+
+        {isAdmin && (
+          <TouchableOpacity
+            onPress={() =>
+              dispatch(
+                deleteRecipe(item.rUid, item.rType, item.image.image_name)
+              )
+            }
+          >
+            <Ionicons name="ios-trash" size={25} color="red" />
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -81,7 +100,8 @@ RenderItem.propTypes = {
 function BreakfastRecipes({ navigation }) {
   const dispatch = useDispatch();
 
-  const { breakfastRecipes, isLoading } = useSelector((state) => ({
+  const { isAdmin, breakfastRecipes, isLoading } = useSelector((state) => ({
+    isAdmin: state.userReducer.isAdmin,
     breakfastRecipes: state.recipeReducer.breakfastRecipes,
     isLoading: state.recipeReducer.isLoading,
   }));
@@ -113,7 +133,12 @@ function BreakfastRecipes({ navigation }) {
             </View>
           )}
           renderItem={({ item, index }) => (
-            <RenderItem key={index} item={item} navigation={navigation} />
+            <RenderItem
+              key={index}
+              item={item}
+              navigation={navigation}
+              isAdmin={isAdmin}
+            />
           )}
           ListEmptyComponent={
             <View style={styles.flatlistEmptyContainer}>

@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -14,12 +14,15 @@ import {
   ImageBackground,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardItem } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import AppBar from '../../components/AppBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import colours from '../../providers/constants/colours';
+
+import { getRecipes } from '../../providers/actions/Recipes';
 
 const styles = StyleSheet.create({
   navContainer: {
@@ -94,14 +97,14 @@ const RecipePreview = ({ feed }) => {
         <TouchableOpacity>
           <ImageBackground
             source={{ uri: feed[0].image.image_url }}
-            style={styles.previewBGImg}
+            style={styles.previewBGImgFull}
           />
         </TouchableOpacity>
 
         <TouchableOpacity>
           <ImageBackground
             source={{ uri: feed[1].image.image_url }}
-            style={styles.previewBGImg}
+            style={styles.previewBGImgFull}
           />
         </TouchableOpacity>
       </View>
@@ -173,9 +176,28 @@ const RecipePreview = ({ feed }) => {
 };
 
 function Home({ navigation }) {
-  const { recipeFeed } = useSelector((state) => ({
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
+  const { recipeFeed, isLoading } = useSelector((state) => ({
     recipeFeed: state.recipeReducer.recipeFeed,
+    isLoading: state.recipeReducer.isLoading,
   }));
+
+  setTimeout(() => {
+    setLoading(isLoading);
+  }, 2000);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      if (active) {
+        const subscribe = dispatch(getRecipes());
+      }
+      return () => (active = false);
+    }, [])
+  );
 
   return (
     <KeyboardAvoidingView
@@ -183,10 +205,15 @@ function Home({ navigation }) {
       style={{ flex: 1 }}
     >
       <AppBar />
-      <ScrollView keyboardDismissMode="on-drag">
-        <NavIcons navigation={navigation} />
-        <RecipePreview feed={recipeFeed} />
-      </ScrollView>
+
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <ScrollView keyboardDismissMode="on-drag">
+          <NavIcons navigation={navigation} />
+          <RecipePreview feed={recipeFeed} />
+        </ScrollView>
+      )}
     </KeyboardAvoidingView>
   );
 }

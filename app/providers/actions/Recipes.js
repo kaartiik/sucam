@@ -75,32 +75,29 @@ export const uploadRecipeWithImages = (
 });
 
 export const uploadEditedRecipeWithImages = (
+  recipeUuid,
+  recipeType,
   title,
+  ingredients,
   description,
   postImages,
-  ingredients,
-  removedPostImgs,
-  postId
+  onSuccess
 ) => ({
   type: actions.UPLOAD.EDITED_RECIPES_IMAGES,
   payload: {
+    recipeUuid,
+    recipeType,
     title,
     description,
-    postImages,
     ingredients,
-    removedPostImgs,
-    postId,
+    postImages,
+    onSuccess,
   },
 });
 
-export const deleteRecipe = (uuid, postId, postImages) => ({
+export const deleteRecipe = (recipeUuid, recipeType, imageName) => ({
   type: actions.DELETE.RECIPES,
-  payload: { uuid, postId, postImages },
-});
-
-export const deleteRecipeImage = (uuid, postId, imageKey, imageKeyWithExt) => ({
-  type: actions.DELETE.SINGLE_RECIPES_IMAGE,
-  payload: { uuid, postId, imageKey, imageKeyWithExt },
+  payload: { recipeUuid, recipeType, imageName },
 });
 
 export const putLoadingStatus = (isLoading) => ({

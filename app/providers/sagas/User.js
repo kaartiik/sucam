@@ -45,18 +45,11 @@ function* syncUserSaga() {
   if (user) {
     const { dbUser } = yield call(getUserProfile, user.uid);
 
-    // merge auth and db user
-    const authUser = {
-      uid: user.uid,
-      email: user.email,
-      ...dbUser,
-    };
-
     setTimeout(() => {
       navigate('AppStack');
     }, 100);
 
-    yield put(putUserProfile(authUser));
+    yield put(putUserProfile(dbUser));
   } else {
     alert('Non authorized user!');
     setTimeout(() => {
