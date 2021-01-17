@@ -52,11 +52,11 @@ export default function BottomTabNavigator() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Upload" component={UploadRecipe} />
       <Tab.Screen name="Recipes" component={AllRecipes} />
-      {/* {isAdmin ? ( */}
-      <Tab.Screen name="Comments" component={AllComments} />
-      {/* ) : ( */}
-      <Tab.Screen name="Contact Us" component={SubmitComments} />
-      {/*// )} */}
+      {isAdmin ? (
+        <Tab.Screen name="Comments" component={AllComments} />
+      ) : (
+        <Tab.Screen name="Contact Us" component={SubmitComments} />
+      )}
     </Tab.Navigator>
   );
 }

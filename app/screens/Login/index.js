@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   StyleSheet,
+  TextInput,
 } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -28,6 +29,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
     textAlign: 'center',
+  },
+  textboxContainer: {
+    backgroundColor: colours.veryLightPink,
+    borderRadius: 3,
+    padding: 5,
+    marginBottom: 5,
   },
   bigBtn: {
     marginHorizontal: 30,
@@ -96,39 +103,40 @@ export default function Login() {
               }) => {
                 return (
                   <View style={{ padding: 10 }}>
-                    <RegularTextBox
-                      label="Email"
-                      placeholderTxt="Enter email..."
-                      value={values.email}
-                      handleChange={handleChange('email')}
-                      errorTxt={errors.email}
-                      isError={
-                        touched.email || submitCount > 0 ? errors.email : null
-                      }
-                      handleBlur={handleBlur('email')}
-                    />
+                    <Text>Email</Text>
+                    <View style={styles.textboxContainer}>
+                      <TextInput
+                        placeholder="Enter email..."
+                        value={values.email}
+                        onChangeText={handleChange('email')}
+                        onBlur={handleBlur('email')}
+                      />
+                    </View>
+                    <Text style={{ color: 'red' }}>
+                      {(touched.email || submitCount > 0) && errors.email}
+                    </Text>
 
-                    <RegularTextBox
-                      label="Password"
-                      placeholderTxt="Enter password..."
-                      value={values.password}
-                      handleChange={handleChange('password')}
-                      errorTxt={errors.password}
-                      isError={
-                        touched.password || submitCount > 0
-                          ? errors.password
-                          : null
-                      }
-                      handleBlur={handleBlur('password')}
-                      secureTextEntry
-                    />
+                    <Text>Password</Text>
+
+                    <View style={styles.textboxContainer}>
+                      <TextInput
+                        secureTextEntry
+                        placeholder="Enter password..."
+                        value={values.password}
+                        onChangeText={handleChange('password')}
+                        onBlur={handleBlur('password')}
+                      />
+                    </View>
+                    <Text style={{ color: 'red' }}>
+                      {(touched.password || submitCount > 0) && errors.password}
+                    </Text>
 
                     <TouchableOpacity
                       style={styles.bigBtn}
                       onPress={handleSubmit}
                       title="SUBMIT"
                     >
-                      <Text>Sign In</Text>
+                      <Text style={{ color: 'white' }}>Sign In</Text>
                     </TouchableOpacity>
                   </View>
                 );
@@ -140,13 +148,6 @@ export default function Login() {
               onPress={() => handleAnonLogin()}
             >
               <Text style={{ color: 'blue' }}>Login as guest</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{ justifyContent: 'center', alignItems: 'center' }}
-              onPress={() => navigate('ForgotPassword')}
-            >
-              <Text style={{ color: 'blue' }}>Forgot password</Text>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>

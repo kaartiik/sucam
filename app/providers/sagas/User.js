@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { call, put, takeEvery, takeLatest, all } from 'redux-saga/effects';
-import { navigate } from '../services/NavigatorService';
+import { navigate, reset } from '../services/NavigatorService';
 import rsf, { auth, database } from '../../providers/config';
 import {
   actions,
@@ -48,15 +48,16 @@ function* syncUserSaga() {
   if (user) {
     const { dbUser } = yield call(getUserProfile, user.uid);
 
-    setTimeout(() => {
-      navigate('AppStack');
-    }, 100);
+    if (dbUser !== null && dbUser !== undefined) {
+      yield put(putUserProfile(dbUser));
+    }
 
-    yield put(putUserProfile(dbUser));
-  } else {
-    alert('Non authorized user!');
     setTimeout(() => {
-      navigate('AuthStack');
+      reset('AppStack');
+    }, 100);
+  } else {
+    setTimeout(() => {
+      reset('AuthStack');
     }, 100);
   }
 }
@@ -74,18 +75,21 @@ function* loginSaga({ email, password }) {
 function* anonLoginSaga() {
   try {
     yield call(anonLoginRequest);
+
+    setTimeout(() => {
+      reset('AppStack');
+    }, 100);
   } catch (error) {
     alert(error);
     return;
   }
-  yield call(syncUserSaga);
 }
 
 function* logoutSaga() {
   try {
     yield call(logoutRequest);
   } catch (error) {
-    alert('Error!');
+    alert('Failed to logout.');
     return;
   }
   yield call(syncUserSaga);
