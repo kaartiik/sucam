@@ -13,10 +13,13 @@ export const actions = {
     USER_PHONE: 'USER_PHONE',
     USER_PROFILE: 'PUT_USER_PROFILE',
     LOADING_STATUS: 'PUT_LOADING_STATUS',
+    ALL_COMMENTS: 'PUT_ALL_COMMENTS',
   },
   UPDATE: {
     USER_PROFILE: 'UPDATE_USER_PROFILE',
   },
+  UPLOAD_COMMENTS: 'UPLOAD_COMMENTS',
+  GET_ALL_COMMENTS: 'GET_ALL_COMMENTS',
 };
 
 export const syncUser = () => ({
@@ -60,6 +63,20 @@ export const putUserName = (name) => ({
 export const putUserPhone = (phone) => ({
   type: actions.PUT.USER_PHONE,
   payload: phone,
+});
+
+export const uploadComments = (name, email, comments) => ({
+  type: actions.UPLOAD_COMMENTS,
+  payload: { name, email, comments },
+});
+
+export const getAllComments = () => ({
+  type: actions.GET_ALL_COMMENTS,
+});
+
+export const putAllComments = (comments) => ({
+  type: actions.PUT.ALL_COMMENTS,
+  payload: comments,
 });
 
 export const putLoadingStatus = (isLoading) => ({

@@ -1,16 +1,17 @@
 /* eslint-disable no-console */
 import { call, put, takeEvery, takeLatest, all } from 'redux-saga/effects';
-import * as Permissions from 'expo-permissions';
-import { Notifications } from 'expo';
 import { navigate } from '../services/NavigatorService';
 import rsf, { auth, database } from '../../providers/config';
 import {
   actions,
   putUserProfile,
-  putUserName,
-  putUserPhone,
+  putAllComments,
   putLoadingStatus,
 } from '../actions/User';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
 
 const loginRequest = ({ email, password }) =>
   auth.signInWithEmailAndPassword(email, password);
@@ -18,6 +19,8 @@ const loginRequest = ({ email, password }) =>
 const anonLoginRequest = () => auth.signInAnonymously();
 
 const logoutRequest = () => auth.signOut();
+
+const fetchNewCommentKey = () => database.ref('comments').push().key;
 
 const onAuthStateChanged = () => {
   return new Promise((resolve, reject) => {
@@ -86,40 +89,41 @@ function* logoutSaga() {
     return;
   }
   yield call(syncUserSaga);
-  //   AsyncStorage.removeItem(Constants.login.tokenKey, () =>
-  //     navigate(Constants.routes.Auth),
-  //   );
 }
 
-function* updateProfileSaga({ payload }) {
-  const { uuid, name, phone, units } = payload;
-  yield put(putLoadingStatus(true));
+function* uploadCommentsSaga({ payload }) {
+  yield putLoadingStatus(true);
 
+  const { name, email, comments } = payload;
+  const commentKey = yield call(fetchNewCommentKey);
   try {
-    if (!units.includes('NONE')) {
-      yield all(
-        units.map(function* (unit) {
-          yield call(rsf.database.patch, `units/${unit}/users/${uuid}`, {
-            name,
-            phone,
-          });
-        })
-      );
-    }
-
-    yield call(rsf.database.patch, `users/${uuid}`, {
+    yield call(rsf.database.update, `comments/${commentKey}`, {
       name,
-      phone,
+      email,
+      comments,
+      created_at: dayjs().format('DD MMMM YYYY hh:mm A'),
     });
+    yield putLoadingStatus(false);
+    alert(`Successfully posted comment.`);
+  } catch (error) {
+    yield putLoadingStatus(false);
+    alert(`Failed to upload comment. ${error}`);
+  }
+}
 
-    yield put(putUserName(name));
-    yield put(putUserPhone(phone));
-
+function* fetchAllCommentsSaga() {
+  yield putLoadingStatus(true);
+  try {
+    const data = yield call(rsf.database.read, `comments`);
+    const exists = data !== null && data !== undefined;
+    if (exists) {
+      const commentsArr = Object.values(data);
+      yield put(putAllComments(commentsArr));
+      yield put(putLoadingStatus(false));
+    }
     yield put(putLoadingStatus(false));
   } catch (error) {
-    yield put(putLoadingStatus(false));
-
-    alert(`Error updating user details! ${error}`);
+    alert(`Failed to retrieve comments. ${error}`);
   }
 }
 
@@ -129,7 +133,7 @@ export default function* User() {
     takeLatest(actions.LOGIN.ANON_REQUEST, anonLoginSaga),
     takeLatest(actions.LOGOUT.REQUEST, logoutSaga),
     takeEvery(actions.SYNC_USER, syncUserSaga),
-    takeLatest(actions.UPDATE.USER_PROFILE, updateProfileSaga),
-    //   takeEvery(actions.PROFILE.UPDATE, updateProfileSaga),
+    takeLatest(actions.UPLOAD_COMMENTS, uploadCommentsSaga),
+    takeLatest(actions.GET_ALL_COMMENTS, fetchAllCommentsSaga),
   ]);
 }

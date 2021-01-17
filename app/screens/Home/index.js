@@ -37,13 +37,18 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
     resizeMode: 'contain',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   previewBGImgFull: {
     opacity: 0.5,
     height: 200,
     width: '100%',
     resizeMode: 'contain',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  recipePreviewText: { fontSize: 20, fontWeight: 'bold' },
 });
 
 const NavIcons = ({ navigation }) => (
@@ -96,7 +101,10 @@ const RecipePreview = ({ feed, navigation }) => {
         <ImageBackground
           source={{ uri: feed[0].image.image_url }}
           style={styles.previewBGImgFull}
-        />
+        >
+          <Text style={styles.recipePreviewText}>{feed[0].rTitle}</Text>
+          <Text style={styles.recipePreviewText}>{feed[0].rTime}</Text>
+        </ImageBackground>
       </TouchableOpacity>
     );
   } else if (feed.length === 2) {
@@ -108,7 +116,10 @@ const RecipePreview = ({ feed, navigation }) => {
           <ImageBackground
             source={{ uri: feed[0].image.image_url }}
             style={styles.previewBGImgFull}
-          />
+          >
+            <Text style={styles.recipePreviewText}>{feed[0].rTitle}</Text>
+            <Text style={styles.recipePreviewText}>{feed[0].rTime}</Text>
+          </ImageBackground>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -117,7 +128,10 @@ const RecipePreview = ({ feed, navigation }) => {
           <ImageBackground
             source={{ uri: feed[1].image.image_url }}
             style={styles.previewBGImgFull}
-          />
+          >
+            <Text style={styles.recipePreviewText}>{feed[1].rTitle}</Text>
+            <Text style={styles.recipePreviewText}>{feed[1].rTime}</Text>
+          </ImageBackground>
         </TouchableOpacity>
       </View>
     );
@@ -133,7 +147,10 @@ const RecipePreview = ({ feed, navigation }) => {
             <ImageBackground
               source={{ uri: feed[0].image.image_url }}
               style={styles.previewBGImg}
-            />
+            >
+              <Text style={styles.recipePreviewText}>{feed[0].rTitle}</Text>
+              <Text style={styles.recipePreviewText}>{feed[0].rTime}</Text>
+            </ImageBackground>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -144,7 +161,10 @@ const RecipePreview = ({ feed, navigation }) => {
             <ImageBackground
               source={{ uri: feed[1].image.image_url }}
               style={styles.previewBGImg}
-            />
+            >
+              <Text style={styles.recipePreviewText}>{feed[1].rTitle}</Text>
+              <Text style={styles.recipePreviewText}>{feed[1].rTime}</Text>
+            </ImageBackground>
           </TouchableOpacity>
         </View>
 
@@ -154,7 +174,10 @@ const RecipePreview = ({ feed, navigation }) => {
           <ImageBackground
             source={{ uri: feed[2].image.image_url }}
             style={styles.previewBGImgFull}
-          />
+          >
+            <Text style={styles.recipePreviewText}>{feed[2].rTitle}</Text>
+            <Text style={styles.recipePreviewText}>{feed[2].rTime}</Text>
+          </ImageBackground>
         </TouchableOpacity>
       </View>
     );
@@ -170,7 +193,10 @@ const RecipePreview = ({ feed, navigation }) => {
             <ImageBackground
               source={{ uri: feed[0].image.image_url }}
               style={styles.previewBGImg}
-            />
+            >
+              <Text style={styles.recipePreviewText}>{feed[0].rTitle}</Text>
+              <Text style={styles.recipePreviewText}>{feed[0].rTime}</Text>
+            </ImageBackground>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -181,7 +207,10 @@ const RecipePreview = ({ feed, navigation }) => {
             <ImageBackground
               source={{ uri: feed[1].image.image_url }}
               style={styles.previewBGImg}
-            />
+            >
+              <Text style={styles.recipePreviewText}>{feed[1].rTitle}</Text>
+              <Text style={styles.recipePreviewText}>{feed[1].rTime}</Text>
+            </ImageBackground>
           </TouchableOpacity>
         </View>
 
@@ -194,7 +223,10 @@ const RecipePreview = ({ feed, navigation }) => {
             <ImageBackground
               source={{ uri: feed[2].image.image_url }}
               style={styles.previewBGImg}
-            />
+            >
+              <Text style={styles.recipePreviewText}>{feed[2].rTitle}</Text>
+              <Text style={styles.recipePreviewText}>{feed[2].rTime}</Text>
+            </ImageBackground>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -205,7 +237,10 @@ const RecipePreview = ({ feed, navigation }) => {
             <ImageBackground
               source={{ uri: feed[3].image.image_url }}
               style={styles.previewBGImg}
-            />
+            >
+              <Text style={styles.recipePreviewText}>{feed[3].rTitle}</Text>
+              <Text style={styles.recipePreviewText}>{feed[3].rTime}</Text>
+            </ImageBackground>
           </TouchableOpacity>
         </View>
       </View>

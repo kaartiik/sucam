@@ -7,6 +7,7 @@ const initialState = {
   role: '',
   isAdmin: false,
   isSuccess: false,
+  allComments: [],
   isLoading: false,
 };
 
@@ -23,6 +24,12 @@ export default function userReducer(state = initialState, action = {}) {
         isAdmin: role === 'admin' ? true : false,
       };
     }
+
+    case actions.PUT.ALL_COMMENTS:
+      return {
+        ...state,
+        allComments: action.payload,
+      };
 
     case actions.PUT.LOADING_STATUS:
       return {

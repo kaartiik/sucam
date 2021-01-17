@@ -6,6 +6,8 @@ import colours from '../providers/constants/colours';
 import Home from '../screens/Home';
 import UploadRecipe from '../screens/UploadRecipe';
 import AllRecipes from '../screens/AllRecipes';
+import AllComments from '../screens/AllComments';
+import SubmitComments from '../screens/SubmitComments';
 
 // import { AuthContext } from './AuthProvider';
 
@@ -30,6 +32,10 @@ export default function BottomTabNavigator() {
             iconName = 'ios-add-circle';
           } else if (route.name === 'Recipes') {
             iconName = 'ios-list';
+          } else if (route.name === 'Comments') {
+            iconName = 'ios-mail';
+          } else if (route.name === 'Contact Us') {
+            iconName = 'ios-information';
           }
 
           // You can return any component that you like here!
@@ -46,9 +52,11 @@ export default function BottomTabNavigator() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Upload" component={UploadRecipe} />
       <Tab.Screen name="Recipes" component={AllRecipes} />
-      {/* <Tab.Screen name="Users" component={Users} />
-      <Tab.Screen name="Profile" component={Profile} />
-      <Tab.Screen name="Chats" component={HomeScreen} /> */}
+      {/* {isAdmin ? ( */}
+      <Tab.Screen name="Comments" component={AllComments} />
+      {/* ) : ( */}
+      <Tab.Screen name="Contact Us" component={SubmitComments} />
+      {/*// )} */}
     </Tab.Navigator>
   );
 }
