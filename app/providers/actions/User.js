@@ -14,6 +14,7 @@ export const actions = {
     USER_PROFILE: 'PUT_USER_PROFILE',
     LOADING_STATUS: 'PUT_LOADING_STATUS',
     ALL_COMMENTS: 'PUT_ALL_COMMENTS',
+    LOGOUT_REQUEST: 'PUT_LOGOUT_REQUEST',
   },
   UPDATE: {
     USER_PROFILE: 'UPDATE_USER_PROFILE',
@@ -38,6 +39,10 @@ export const loginAnon = () => ({
 
 export const logout = () => ({
   type: actions.LOGOUT.REQUEST,
+});
+
+export const putLogout = () => ({
+  type: actions.PUT.LOGOUT_REQUEST,
 });
 
 export const putUserProfile = (profile) => ({

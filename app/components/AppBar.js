@@ -30,11 +30,9 @@ const AppBar = () => {
         }}
       >
         <Left>
-          {isAdmin && (
-            <TouchableOpacity onPress={() => dispatch(logout())}>
-              <Ionicons name="ios-exit" size={20} color="white" />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={() => dispatch(logout())}>
+            <Ionicons name="ios-exit" size={20} color="white" />
+          </TouchableOpacity>
         </Left>
 
         <Body>

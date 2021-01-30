@@ -17,7 +17,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 
 import colours from '../../providers/constants/colours';
 
-import { deleteRecipe } from '../../providers/actions/Recipes';
+import { getRecipes, deleteRecipe } from '../../providers/actions/Recipes';
 
 const styles = StyleSheet.create({
   divider: {
@@ -109,6 +109,7 @@ RenderItem.propTypes = {
 function AllRecipes({ navigation }) {
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
+  const [data, setData] = useState([]);
 
   const { isAdmin, recipeFeed, isLoading } = useSelector((state) => ({
     isAdmin: state.userReducer.isAdmin,
@@ -116,7 +117,13 @@ function AllRecipes({ navigation }) {
     isLoading: state.recipeReducer.isLoading,
   }));
 
-  const [data, setData] = useState([...recipeFeed]);
+  useEffect(() => {
+    dispatch(getRecipes());
+  }, []);
+
+  useEffect(() => {
+    setData([...recipeFeed]);
+  }, [recipeFeed]);
 
   const searchData = (searchText) => {
     let newData = [];

@@ -31,6 +31,9 @@ export default function userReducer(state = initialState, action = {}) {
         allComments: action.payload,
       };
 
+    case actions.PUT.LOGOUT_REQUEST:
+      return initialState;
+
     case actions.PUT.LOADING_STATUS:
       return {
         ...state,

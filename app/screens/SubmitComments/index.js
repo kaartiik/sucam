@@ -132,6 +132,7 @@ export default function SubmitComments({ route, navigation }) {
             <Text>Email</Text>
             <View style={styles.textboxContainer}>
               <TextInput
+                caretHidden={true}
                 ref={fieldRefEmail}
                 value={email}
                 onChangeText={(text) => setEmail(text)}

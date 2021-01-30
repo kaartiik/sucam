@@ -350,8 +350,10 @@ function* deleteRecipeSaga({ payload }) {
       yield call(getBreakfastRecipes);
     } else if (recipeType === 'lunch_recipes') {
       yield call(getLunchRecipesSaga);
-    } else {
+    } else if (recipeType === 'dinner_recipes') {
       yield call(getDinnerRecipesSaga);
+    } else {
+      yield call(getRecipesSaga);
     }
 
     yield put(putLoadingStatus(false));

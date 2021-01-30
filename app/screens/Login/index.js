@@ -106,6 +106,7 @@ export default function Login() {
                     <Text>Email</Text>
                     <View style={styles.textboxContainer}>
                       <TextInput
+                        caretHidden={true}
                         placeholder="Enter email..."
                         value={values.email}
                         onChangeText={handleChange('email')}

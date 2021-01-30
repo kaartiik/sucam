@@ -6,6 +6,7 @@ import {
   actions,
   putUserProfile,
   putAllComments,
+  putLogout,
   putLoadingStatus,
 } from '../actions/User';
 import dayjs from 'dayjs';
@@ -87,9 +88,10 @@ function* anonLoginSaga() {
 
 function* logoutSaga() {
   try {
+    yield put(putLogout());
     yield call(logoutRequest);
   } catch (error) {
-    alert('Failed to logout.');
+    alert(`Failed to logout. ${error}`);
     return;
   }
   yield call(syncUserSaga);
