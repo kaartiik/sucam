@@ -34,7 +34,7 @@ const fetchRefreshedPosts = () =>
     .once('value')
     .then((snapshot) => ({ postsData: snapshot.val() || {} }));
 
-const formatPost = (data) => {
+const formatPost = async (data) => {
   const {
     recipe_title,
     recipe_ingredients,
@@ -45,9 +45,25 @@ const formatPost = (data) => {
     created_at,
     is_image,
     image,
+    ingr_images,
   } = data;
+
+  const ingrImgsArr =
+    ingr_images !== null && ingr_images !== undefined
+      ? Object.values(ingr_images)
+      : [];
+
+  const ingrFormattedImgs = ingrImgsArr.map((img) => ({
+    imgId: img.image_name,
+    imgUri: img.image_url,
+  }));
+
+  const ingrPromise = await Promise.all(ingrFormattedImgs);
+  console.log(ingrPromise);
+
   return {
     image,
+    rImages: ingrPromise,
     rTitle: recipe_title,
     rIngr: recipe_ingredients,
     rDescr: recipe_description,
@@ -289,8 +305,6 @@ function* uploadRecipeWithImagesSaga({ payload }) {
     recipe_video_url: videoURL,
   };
 
-  console.log(postObject);
-
   try {
     yield call(rsf.database.update, `recipes/${postKey}`, postObject);
 
@@ -311,13 +325,42 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
     ingredients,
     videoURL,
     postImages,
+    ingrImages,
     onSuccess,
   } = payload;
   yield put(putLoadingStatus(true));
 
   let image = {};
+  let ingrImgs = {};
 
   try {
+    const toUploadIngrImages = ingrImages.filter((img) => {
+      const encodedStr = img.imgId;
+      const isHttps = encodedStr.indexOf('https');
+      if (isHttps === -1) {
+        return img;
+      } else {
+        const imgNameWithoutExt = img.imgId.split('.')[0];
+        ingrImgs = {
+          ...ingrImgs,
+          [`${imgNameWithoutExt}`]: {
+            image_name: img.imgId,
+            image_url: img.imgUri,
+          },
+        };
+      }
+    });
+
+    console.log(toUploadIngrImages);
+
+    const newIngrImages = yield call(
+      postImagesFunc,
+      recipeUuid,
+      toUploadIngrImages
+    );
+
+    ingrImgs = { ...ingrImgs, ...newIngrImages };
+
     const encodedStr = postImages.imgUri;
     const isHttps = encodedStr.indexOf('https');
 
@@ -360,6 +403,7 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
 
   const postObject = {
     image,
+    ingr_images: ingrImgs,
     created_at: Date.now(),
     is_image: true,
     recipe_type: recipeType,
@@ -382,18 +426,40 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
   }
 }
 
+function* deleteEditedImageSaga({ payload }) {
+  const { recipeUuid, recipeType, imageName } = payload;
+  const imgNameWithoutExt = imageName.split('.')[0];
+
+  try {
+    yield call(rsf.storage.deleteFile, `Recipes/${recipeUuid}/${imageName}`);
+    yield call(
+      rsf.database.delete,
+      `recipes/${recipeUuid}/ingr_images/${imgNameWithoutExt}`
+    );
+    yield call(
+      rsf.database.delete,
+      `${recipeType}/${recipeUuid}/ingr_images/${imgNameWithoutExt}`
+    );
+    alert('Deleted image.');
+  } catch (error) {
+    yield put(putLoadingStatus(false));
+    alert(`Error deleting post image. ${error}`);
+    return;
+  }
+}
+
 function* deleteRecipeSaga({ payload }) {
   const { recipeUuid, recipeType, imageName } = payload;
   yield put(putLoadingStatus(true));
-  if (imageName !== undefined) {
-    try {
-      yield call(rsf.storage.deleteFile, `Recipes/${recipeUuid}/${imageName}`);
-    } catch (error) {
-      yield put(putLoadingStatus(false));
-      alert(`Error deleting post image. ${error}`);
-      return;
-    }
-  }
+  // if (imageName !== undefined) {
+  //   try {
+  //     yield call(rsf.storage.deleteFile, `Recipes/${recipeUuid}/${imageName}`);
+  //   } catch (error) {
+  //     yield put(putLoadingStatus(false));
+  //     alert(`Error deleting post image. ${error}`);
+  //     return;
+  //   }
+  // }
 
   try {
     yield call(rsf.database.delete, `recipes/${recipeUuid}`);
@@ -429,6 +495,7 @@ export default function* Recipes() {
       actions.UPLOAD.EDITED_RECIPES_IMAGES,
       uploadEditedPostWithImagesSaga
     ),
+    takeLatest(actions.DELETE.IMAGE, deleteEditedImageSaga),
     // takeLatest(actions.UPLOAD.POST_IMAGES, deletePostSaga),
     //   takeEvery(actions.PROFILE.UPDATE, updateProfileSaga),
   ]);

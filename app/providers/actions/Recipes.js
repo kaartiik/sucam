@@ -21,8 +21,14 @@ export const actions = {
   DELETE: {
     RECIPES: 'DELETE_RECIPES',
     SINGLE_RECIPES_IMAGE: 'SINGLE_RECIPES_IMAGE',
+    IMAGE: 'DELETE_IMAGE',
   },
 };
+
+export const deleteEditedImage = (recipeUuid, recipeType, imageName) => ({
+  type: actions.DELETE.IMAGE,
+  payload: { recipeUuid, recipeType, imageName },
+});
 
 export const putRecipePhotos = (photos) => ({
   type: actions.PUT.RECIPE_PHOTOS,
@@ -98,6 +104,7 @@ export const uploadEditedRecipeWithImages = (
   description,
   videoURL,
   postImages,
+  ingrImages,
   onSuccess
 ) => ({
   type: actions.UPLOAD.EDITED_RECIPES_IMAGES,
@@ -109,6 +116,7 @@ export const uploadEditedRecipeWithImages = (
     ingredients,
     videoURL,
     postImages,
+    ingrImages,
     onSuccess,
   },
 });

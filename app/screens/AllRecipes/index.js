@@ -73,7 +73,7 @@ const RenderItem = ({ item, navigation, isAdmin }) => {
           source={{ uri: item.image.image_url }}
           style={styles.previewImg}
         />
-        <View style={{ marginLeft: 10 }}>
+        <View style={{ marginLeft: 10, width: 200 }}>
           <Text
             style={{
               fontSize: 15,
@@ -82,7 +82,7 @@ const RenderItem = ({ item, navigation, isAdmin }) => {
               flexShrink: 1,
             }}
           >
-            {'bal to check if the name is too long fitting the cereen or  nto'.toUpperCase()}
+            {item.rTitle.toUpperCase()}
           </Text>
           <Text style={styles.recipeDescription}>{item.rTime}</Text>
         </View>

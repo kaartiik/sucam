@@ -6,7 +6,7 @@ import LogoImage from '../../assets/splash.png';
 const { width, height } = Dimensions.get('window');
 
 const Logo = () => (
-  <Image source={LogoImage} resizeMode="contain" style={{ width, height }} />
+  <Image source={LogoImage} resizeMode="cover" style={{ width, height }} />
 );
 
 export default Logo;

@@ -6,7 +6,7 @@ import {
   View,
   Image,
   KeyboardAvoidingView,
-  Keyboard,
+  FlatList,
   TouchableWithoutFeedback,
   TextInput,
   Platform,
@@ -21,7 +21,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import { uploadEditedRecipeWithImages } from '../../providers/actions/Recipes';
+import {
+  uploadEditedRecipeWithImages,
+  deleteEditedImage,
+} from '../../providers/actions/Recipes';
 import colours from '../../providers/constants/colours';
 
 const styles = StyleSheet.create({
@@ -31,6 +34,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 180,
     width: 240,
+    margin: 5,
+    backgroundColor: 'lightgrey',
+    borderRadius: 4,
+  },
+  imagePreviewContainer2: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: 90,
+    width: 120,
     margin: 5,
     backgroundColor: 'lightgrey',
     borderRadius: 4,
@@ -99,6 +112,9 @@ export default function EditRecipe({ route, navigation }) {
           imgUri: recipeItem.image.image_url,
         }
       : null
+  );
+  const [imagesUriArr, setImagesUriArr] = useState(
+    recipeItem ? recipeItem.rImages : []
   );
   const [videoURL, setVideoURL] = useState(recipeItem ? recipeItem.rURL : '');
 
@@ -186,6 +202,7 @@ export default function EditRecipe({ route, navigation }) {
           description,
           videoURL,
           imgUriArr,
+          imagesUriArr,
           () => navigation.goBack()
         )
       );
@@ -212,6 +229,55 @@ export default function EditRecipe({ route, navigation }) {
         </TouchableOpacity>
       </View>
     );
+  };
+
+  const renderImages = ({ item }) => (
+    <View style={styles.imagePreviewContainer2}>
+      <Image source={{ uri: item.imgUri }} style={styles.imagePreview} />
+      <TouchableOpacity
+        style={{ position: 'absolute', bottom: 0, right: 0 }}
+        onPress={() => {
+          const encodedStr = item.imgUri;
+          const isHttps = encodedStr.indexOf('https');
+
+          if (isHttps !== -1) {
+            dispatch(deleteEditedImage(recipeUuid, recipeType, item.imgId));
+          }
+          const newImages = imagesUriArr.filter(
+            (img) => img.imgId !== item.imgId
+          );
+
+          setImagesUriArr(newImages);
+        }}
+      >
+        <Ionicons
+          style={{ padding: 10 }}
+          name="ios-trash"
+          size={22}
+          color="red"
+        />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const findIngredientImages = async () => {
+    checkPermissions().then(async () => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'Images',
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.cancelled) {
+        setImagesUriArr((existing) => [
+          ...existing,
+          {
+            imgUri: result.uri,
+            imgId: uniqueId(),
+          },
+        ]);
+      }
+    });
   };
 
   return (
@@ -247,6 +313,8 @@ export default function EditRecipe({ route, navigation }) {
       ) : (
         <ScrollView>
           {imageSelected && <RenderImg />}
+
+          <FlatList horizontal data={imagesUriArr} renderItem={renderImages} />
 
           <Picker
             style={{ width: '50%', alignSelf: 'center' }}
@@ -325,6 +393,13 @@ export default function EditRecipe({ route, navigation }) {
                 <Text style={styles.btnText}>
                   {imageSelected ? `Change Image` : `Add Image`}
                 </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.regBtn}
+                onPress={() => findIngredientImages()}
+              >
+                <Text style={styles.btnText}>Ingredients images</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

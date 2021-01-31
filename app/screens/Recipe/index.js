@@ -8,7 +8,8 @@ import {
   View,
   Text,
   Animated,
-  Touchable,
+  FlatList,
+  Image,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import PropTypes from 'prop-types';
@@ -100,6 +101,22 @@ const styles = StyleSheet.create({
   subHeader: { fontSize: 15, fontWeight: 'bold' },
   descriptionText: { fontSize: 15 },
   spacingComponent: { marginVertical: 10 },
+  imagePreviewContainer2: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: 90,
+    width: 120,
+    margin: 5,
+    backgroundColor: 'lightgrey',
+    borderRadius: 4,
+  },
+  imagePreview: {
+    margin: 5,
+    resizeMode: 'contain',
+    width: '100%',
+    height: '100%',
+  },
 });
 
 function Recipe({ route, navigation }) {
@@ -139,6 +156,12 @@ function Recipe({ route, navigation }) {
     extrapolate: 'clamp',
   });
 
+  const renderImages = ({ item }) => (
+    <View style={styles.imagePreviewContainer2}>
+      <Image source={{ uri: item.imgUri }} style={styles.imagePreview} />
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.saveArea}>
       <Animated.ScrollView
@@ -152,6 +175,12 @@ function Recipe({ route, navigation }) {
           { useNativeDriver: true }
         )}
       >
+        <FlatList
+          horizontal
+          data={recipeItem.rImages}
+          renderItem={renderImages}
+        />
+
         <Text style={styles.subHeader}>Ingredients</Text>
 
         <Text style={styles.descriptionText}>{recipeItem.rIngr}</Text>
