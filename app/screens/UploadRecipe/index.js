@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import AppBar from '../../components/AppBar';
-import { ScrollView } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingIndicator from '../../components/LoadingIndicator';
@@ -31,6 +31,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 180,
     width: 240,
+    margin: 5,
+    backgroundColor: 'lightgrey',
+    borderRadius: 4,
+  },
+  imagePreviewContainer2: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    height: 90,
+    width: 120,
     margin: 5,
     backgroundColor: 'lightgrey',
     borderRadius: 4,
@@ -109,6 +119,7 @@ export default function UploadRecipe({ route, navigation }) {
   const [camera, setCamera] = useState('');
   const [cameraRoll, setCameraRoll] = useState('');
   const [imgUriArr, setImgUriArr] = useState(null);
+  const [imagesUriArr, setImagesUriArr] = useState([]);
   const [videoURL, setVideoURL] = useState('');
 
   const fieldRefTitle = useRef();
@@ -130,6 +141,7 @@ export default function UploadRecipe({ route, navigation }) {
     setDescription('');
     setVideoURL('');
     setImgUriArr(null);
+    setImagesUriArr([]);
     setImageSelected(false);
   };
 
@@ -179,9 +191,30 @@ export default function UploadRecipe({ route, navigation }) {
     });
   };
 
+  const findIngredientImages = async () => {
+    checkPermissions().then(async () => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'Images',
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.cancelled) {
+        setImagesUriArr((existing) => [
+          ...existing,
+          {
+            imgUri: result.uri,
+            imgId: uniqueId(),
+          },
+        ]);
+      }
+    });
+  };
+
   const validatePost = async () => {
     if (
       imageSelected &&
+      imagesUriArr.length > 0 &&
       title !== '' &&
       ingredients !== '' &&
       description !== ''
@@ -194,15 +227,41 @@ export default function UploadRecipe({ route, navigation }) {
           ingredients,
           description,
           videoURL,
-          imgUriArr
+          imgUriArr,
+          imagesUriArr
         )
       );
+
+      clearText();
     } else {
       alert(
-        `Make sure image is selected, title, ingredients and description fields are not empty.`
+        `Make sure main image and ingredients images are selected, title, ingredients and description fields are not empty.`
       );
     }
   };
+
+  const renderImages = ({ item }) => (
+    <View style={styles.imagePreviewContainer2}>
+      <Image source={{ uri: item.imgUri }} style={styles.imagePreview} />
+      <TouchableOpacity
+        style={{ position: 'absolute', bottom: 0, right: 0 }}
+        onPress={() => {
+          const newImages = imagesUriArr.filter(
+            (img) => img.imgId !== item.imgId
+          );
+
+          setImagesUriArr(newImages);
+        }}
+      >
+        <Ionicons
+          style={{ padding: 10 }}
+          name="ios-trash"
+          size={22}
+          color="red"
+        />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -221,6 +280,8 @@ export default function UploadRecipe({ route, navigation }) {
               setImageSelected={setImageSelected}
             />
           )}
+
+          <FlatList horizontal data={imagesUriArr} renderItem={renderImages} />
 
           <Picker
             style={{ width: '50%', alignSelf: 'center' }}
@@ -281,6 +342,13 @@ export default function UploadRecipe({ route, navigation }) {
                 <Text style={styles.btnText}>
                   {imageSelected ? `Change Image` : `Add Image`}
                 </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.regBtn}
+                onPress={() => findIngredientImages()}
+              >
+                <Text style={styles.btnText}>Ingredients images</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

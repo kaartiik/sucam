@@ -169,7 +169,12 @@ function Recipe({ route, navigation }) {
             <Text style={styles.subHeader}>Video</Text>
             <WebView
               source={{ uri: recipeItem.rURL }}
-              style={{ height: 200, width: 400 }}
+              style={{
+                height: 200,
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             />
           </>
         )}

@@ -12,6 +12,7 @@ import {
   Platform,
   StyleSheet,
   ImageBackground,
+  Dimensions,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -24,6 +25,8 @@ import colours from '../../providers/constants/colours';
 
 import { getRecipes } from '../../providers/actions/Recipes';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   navContainer: {
     flex: 1,
@@ -35,7 +38,7 @@ const styles = StyleSheet.create({
   previewBGImg: {
     opacity: 0.5,
     height: 200,
-    width: 200,
+    width: SCREEN_WIDTH / 2,
     resizeMode: 'contain',
     alignItems: 'center',
     justifyContent: 'center',
@@ -48,7 +51,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  recipePreviewText: { fontSize: 20, fontWeight: 'bold' },
+  recipePreviewText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    flex: 1,
+    flexWrap: 'wrap',
+    margin: 5,
+  },
 });
 
 const NavIcons = ({ navigation }) => (
@@ -184,7 +193,7 @@ const RecipePreview = ({ feed, navigation }) => {
   } else if (feed.length > 3) {
     return (
       <View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('Recipe', { recipeItem: feed[0] })
@@ -214,7 +223,7 @@ const RecipePreview = ({ feed, navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('Recipe', { recipeItem: feed[2] })

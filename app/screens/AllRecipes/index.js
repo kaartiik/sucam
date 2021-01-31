@@ -79,9 +79,10 @@ const RenderItem = ({ item, navigation, isAdmin }) => {
               fontSize: 15,
               color: colours.lightBlue,
               marginVertical: 3,
+              flexShrink: 1,
             }}
           >
-            {item.rTitle.toUpperCase()}
+            {'bal to check if the name is too long fitting the cereen or  nto'.toUpperCase()}
           </Text>
           <Text style={styles.recipeDescription}>{item.rTime}</Text>
         </View>

@@ -181,6 +181,52 @@ function* getRefreshedPostsSaga() {
   }
 }
 
+function* postImagesFunc(postKey, postImages) {
+  let image = {};
+  try {
+    const urls = yield all(
+      postImages.map(function* (postImg) {
+        const re = /(?:\.([^.]+))?$/;
+        const ext = re.exec(postImg.imgUri)[1];
+        const currentFileType = ext;
+        const response = yield fetch(postImg.imgUri);
+        const blob = yield response.blob();
+        const fileName = postImg.imgId;
+        const fileNameWithExt = `${fileName}.${currentFileType}`;
+        const filePath = `Recipes/${postKey}/${fileNameWithExt}`;
+
+        const task = rsf.storage.uploadFile(filePath, blob);
+
+        task.on('state_changed', (snapshot) => {
+          const pct = (snapshot.bytesTransferred * 100) / snapshot.totalBytes;
+        });
+
+        // Wait for upload to complete
+        yield task;
+
+        const imageUrl = yield call(rsf.storage.getDownloadURL, filePath);
+
+        image = {
+          ...image,
+          [`${fileName}`]: {
+            image_name: fileNameWithExt,
+            image_url: imageUrl,
+          },
+        };
+
+        return imageUrl;
+      })
+    );
+
+    if (urls.length > 0) {
+      return image;
+    }
+  } catch (error) {
+    yield put(putLoadingStatus(false));
+    return error;
+  }
+}
+
 function* uploadRecipeWithImagesSaga({ payload }) {
   const {
     recipeType,
@@ -189,13 +235,17 @@ function* uploadRecipeWithImagesSaga({ payload }) {
     ingredients,
     videoURL,
     postImages,
+    ingrImages,
   } = payload;
   yield put(putLoadingStatus(true));
+  let image = {};
+  let ingrImgs = {};
 
   const postKey = yield call(fetchNewPostKey);
-  let image = {};
 
   try {
+    ingrImgs = yield call(postImagesFunc, postKey, ingrImages);
+
     const re = /(?:\.([^.]+))?$/;
     const ext = re.exec(postImages.imgUri)[1];
     const currentFileType = ext;
@@ -228,6 +278,7 @@ function* uploadRecipeWithImagesSaga({ payload }) {
 
   const postObject = {
     image,
+    ingr_images: ingrImgs,
     created_at: Date.now(),
     is_image: true,
     recipe_type: recipeType,
@@ -237,6 +288,8 @@ function* uploadRecipeWithImagesSaga({ payload }) {
     recipe_uid: postKey,
     recipe_video_url: videoURL,
   };
+
+  console.log(postObject);
 
   try {
     yield call(rsf.database.update, `recipes/${postKey}`, postObject);

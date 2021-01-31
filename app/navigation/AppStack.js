@@ -8,7 +8,7 @@ import LunchRecipes from '../screens/LunchRecipes';
 import DinnerRecipes from '../screens/DinnerRecipes';
 import Recipe from '../screens/Recipe';
 import EditRecipe from '../screens/EditRecipe';
-// import { AuthContext } from './AuthProvider';
+import ImagePicker from '../screens/UploadRecipe/ImagePicker';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +27,7 @@ export default function MainStack() {
       <Stack.Screen name="DinnerRecipes" component={DinnerRecipes} />
       <Stack.Screen name="Recipe" component={Recipe} />
       <Stack.Screen name="EditRecipe" component={EditRecipe} />
+      <Stack.Screen name="ImagePicker" component={ImagePicker} />
     </Stack.Navigator>
   );
 }

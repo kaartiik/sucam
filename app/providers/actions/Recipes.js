@@ -11,6 +11,7 @@ export const actions = {
     BREAKFAST_RECIPES: 'PUT_BREAKFAST_RECIPES',
     LUNCH_RECIPES: 'PUT_LUNCH_RECIPES',
     DINNER_RECIPES: 'PUT_DINNER_RECIPES',
+    RECIPE_PHOTOS: 'PUT_RECIPE_PHOTOS',
     LOADING_STATUS: 'PUT_LOADING_STATUS',
   },
   UPLOAD: {
@@ -22,6 +23,11 @@ export const actions = {
     SINGLE_RECIPES_IMAGE: 'SINGLE_RECIPES_IMAGE',
   },
 };
+
+export const putRecipePhotos = (photos) => ({
+  type: actions.PUT.RECIPE_PHOTOS,
+  payload: photos,
+});
 
 export const getRecipes = () => ({
   type: actions.GET.RECIPES,
@@ -69,7 +75,8 @@ export const uploadRecipeWithImages = (
   ingredients,
   description,
   videoURL,
-  postImages
+  postImages,
+  ingrImages
 ) => ({
   type: actions.UPLOAD.RECIPES_IMAGES,
   payload: {
@@ -79,6 +86,7 @@ export const uploadRecipeWithImages = (
     ingredients,
     videoURL,
     postImages,
+    ingrImages,
   },
 });
 
