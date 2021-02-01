@@ -335,7 +335,7 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
 
   try {
     const toUploadIngrImages = ingrImages.filter((img) => {
-      const encodedStr = img.imgId;
+      const encodedStr = img.imgUri;
       const isHttps = encodedStr.indexOf('https');
       if (isHttps === -1) {
         return img;
@@ -351,8 +351,6 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
       }
     });
 
-    console.log(toUploadIngrImages);
-
     const newIngrImages = yield call(
       postImagesFunc,
       recipeUuid,
@@ -360,6 +358,8 @@ function* uploadEditedPostWithImagesSaga({ payload }) {
     );
 
     ingrImgs = { ...ingrImgs, ...newIngrImages };
+
+    console.log(ingrImgs);
 
     const encodedStr = postImages.imgUri;
     const isHttps = encodedStr.indexOf('https');
