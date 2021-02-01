@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   iconTitle: { fontFamily: 'sans-serif-light', fontSize: 18, color: 'white' },
   previewBGImg: {
     opacity: 0.5,
-    height: 200,
+    height: 350,
     width: SCREEN_WIDTH / 2,
     resizeMode: 'contain',
     alignItems: 'center',
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   previewBGImgFull: {
     opacity: 0.5,
-    height: 200,
+    height: 350,
     width: '100%',
     resizeMode: 'contain',
     alignItems: 'center',

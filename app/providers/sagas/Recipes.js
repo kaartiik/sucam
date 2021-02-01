@@ -58,12 +58,18 @@ const formatPost = async (data) => {
     imgUri: img.image_url,
   }));
 
+  const ingrFormattedImgs2 = ingrImgsArr.map((img) => ({
+    imgId: img.image_name,
+    url: img.image_url,
+  }));
+
   const ingrPromise = await Promise.all(ingrFormattedImgs);
-  console.log(ingrPromise);
+  const ingrPromise2 = await Promise.all(ingrFormattedImgs2);
 
   return {
     image,
     rImages: ingrPromise,
+    rImages2: ingrPromise2,
     rTitle: recipe_title,
     rIngr: recipe_ingredients,
     rDescr: recipe_description,

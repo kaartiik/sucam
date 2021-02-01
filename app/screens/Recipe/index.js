@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AppBar from '../../components/AppBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import colours from '../../providers/constants/colours';
+import ImageEnlargeViewer from '../../components/ImageViewer';
 
 const HEADER_MAX_HEIGHT = 240;
 const HEADER_MIN_HEIGHT = 60;
@@ -121,6 +122,8 @@ const styles = StyleSheet.create({
 
 function Recipe({ route, navigation }) {
   const { recipeItem } = route.params;
+  const [isImgModalOpen, setIsImgModalOpen] = useState(false);
+  const [imgIndex, setImgIndex] = useState(-1);
 
   const { isAdmin } = useSelector((state) => ({
     isAdmin: state.userReducer.isAdmin,
@@ -156,10 +159,16 @@ function Recipe({ route, navigation }) {
     extrapolate: 'clamp',
   });
 
-  const renderImages = ({ item }) => (
-    <View style={styles.imagePreviewContainer2}>
+  const renderImages = ({ item, index }) => (
+    <TouchableOpacity
+      onPress={() => {
+        setImgIndex(index);
+        setIsImgModalOpen(true);
+      }}
+      style={styles.imagePreviewContainer2}
+    >
       <Image source={{ uri: item.imgUri }} style={styles.imagePreview} />
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -253,6 +262,12 @@ function Recipe({ route, navigation }) {
         />
         <Text style={styles.title}>{recipeItem.rTitle}</Text>
       </Animated.View>
+      <ImageEnlargeViewer
+        index={imgIndex}
+        images={recipeItem.rImages2}
+        isImgModalOpen={isImgModalOpen}
+        setIsImgModalOpen={setIsImgModalOpen}
+      />
     </SafeAreaView>
   );
 }
