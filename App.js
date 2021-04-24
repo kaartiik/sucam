@@ -3,7 +3,6 @@ import { LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import store from './app/providers/store';
 import {
   navRef,
   isMountedRef,
@@ -22,15 +21,13 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <Suspense fallback={null}>
-        <SafeAreaProvider>
-          <NavigationContainer ref={navRef}>
-            <AppNavigator />
-          </NavigationContainer>
-        </SafeAreaProvider>
-      </Suspense>
-    </Provider>
+    <Suspense fallback={null}>
+      <SafeAreaProvider>
+        <NavigationContainer ref={navRef}>
+          <AppNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </Suspense>
   );
 };
 

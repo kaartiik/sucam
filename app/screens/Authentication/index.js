@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { reset } from '../../providers/services/NavigatorService';
 
 import Splash from '../../components/Splash';
-import { syncUser } from '../../providers/actions/User';
 
-const Authentication = ({ syncUser: syncUserCall }) => {
+const Authentication = () => {
   useEffect(() => {
-    syncUserCall();
-  });
+    setTimeout(() => {
+      reset('AppStack');
+    }, 1000);
+  }, []);
 
   return <Splash />;
 };
@@ -17,4 +18,4 @@ Authentication.propTypes = {
   syncUser: PropTypes.func.isRequired,
 };
 
-export default connect(null, { syncUser })(Authentication);
+export default Authentication;

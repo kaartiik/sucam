@@ -18,16 +18,4 @@ const Loading = () => (
   </View>
 );
 
-// Loading.defaultProps = {
-//   size: 'small',
-//   style: null,
-//   hasMargin: true,
-// };
-
-// Loading.propTypes = {
-//   size: PropTypes.string,
-//   style: PropTypes.object,
-//   hasMargin: PropTypes.bool,
-// };
-
 export default Loading;
